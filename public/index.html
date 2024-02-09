@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WeatherApp</title>
     <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
     <link rel="stylesheet" href="index.css">
 </head>
-<body>
+<body class="bg-teal-300">
     <h3>Select city</h3>
     <div class="input-container">
         <input type="text" id="city-select">
-        <button onclick="weatherCity()">know it!</button>
+        <button class="bg-cyan-500 text-white py-2 px-4 rounded shadow-lg hover:shadow-green-800 ml-2 mt-2 cursor-pointer" onclick="weatherCity()">know it!</button>
     </div>
     <br>
     <br>
@@ -51,7 +52,7 @@
     <h3>Input BTC wallet (Example: bc1qtzrgc6sq5c3hgktlg7dk38ytgdm8fnjhnj9khl)</h3>
     <div class="input-container">
         <input type="text" id="wallet-select">
-        <button onclick="checkBTCWallet()">check it!</button>
+        <button class="bg-green-500 text-white py-2 px-4 rounded shadow-lg hover:shadow-cyan-800 cursor-pointer" onclick="checkBTCWallet()">check it!</button>
     </div>
     <br>
     <br>
