@@ -21,19 +21,19 @@ The application includes several API endpoints:
 
 1. **OpenWeather API:**
    - Shows weather information.
-     ```
+ 
 2. **OpenStreet API:**
    - Shows a world map.
-     ```
+ 
 3. **Geoapify API:**
    - Shows detailed weather information.
-     ```
+ 
 4. **Bitcoin Wallet Info API:**
    - Info About Bitcoin.
-     ```
-5. **Bitcoin Price API (`/BTC/price`):**
+ 
+5. **Bitcoin Price API:**
    -  Current info about bin and $.
-     ```
+   
 ## Installation and Setup
 
 To get the project up and running on your local machine, follow these steps:
