@@ -64,5 +64,5 @@ To get the project up and running on your local machine, follow these steps:
    ```
 3. **Start the Server**
    ```sh
-   node index.js
+   node app.js
    ```
