@@ -15,41 +15,25 @@ Before you begin, ensure you have met the following requirements:
 - Node.js installed on your system.
 - An internet connection to access external APIs.
 
-## API Endpoints
+## APIs , OpenStreetMap APi , Geoapify APi , OpenWeather APi
 
 The application includes several API endpoints:
 
-1. **Weather API (`/weather/:city`):**
-   - Fetches weather data for a specified city.
-   - Method: `GET`
-   - Parameters:
-     - `city`: Name of the city.
-   - Example Request: 
-     ```http
-     GET /weather/London
+1. **OpenWeather API:**
+   - Shows weather information.
      ```
-
-2. **Bitcoin Wallet Info API (`/wallet/:address`):**
-   - Provides information on a specific Bitcoin wallet.
-   - Method: `GET`
-   - Parameters:
-     - `address`: Bitcoin wallet address.
-   - Example Request:
-     ```http
-     GET /wallet/1BoatSLRHtKNngkdXEeobR76b53LETtpyT
+2. **OpenStreet API:**
+   - Shows a world map.
      ```
-
-3. **Bitcoin Price API (`/BTC/price`):**
-   - Shows the current price of Bitcoin in USD.
-   - Method: `GET`
-   - Example Request:
-     ```http
-     GET /BTC/price
+3. **Geoapify API:**
+   - Shows detailed weather information.
      ```
-3. **Main page (`/`):**
-   - Shows the main index.html page.
-   - Method: `GET`
-
+4. **Bitcoin Wallet Info API:**
+   - Info About Bitcoin.
+     ```
+5. **Bitcoin Price API (`/BTC/price`):**
+   -  Current info about bin and $.
+     ```
 ## Installation and Setup
 
 To get the project up and running on your local machine, follow these steps:
