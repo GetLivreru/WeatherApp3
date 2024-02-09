@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MIDKA SAILAUBEK</title>
+    <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
+    <style>
+        table {
+            border-collapse: collapse; 
+        }
+        table tr {
+            border: 1px solid black; 
+        }        
+        table td, table th {
+            border-left: 1px solid black; 
+            padding: 8px; 
+        }
+        table td:first-child, table th:first-child {
+            border-left: none; 
+        }
+    </style>
+</head>
+<body>
+    <h3>Select city</h3>
+    <input type="text" id="city-select">
+    <button onclick="weatherCity()">know it!</button>
+    <br>
+    <br>
+    <div id="map" style="height: 300px;"></div>
+    <br>
+    <table>
+        <tr>
+            <td>Pressure</td>
+            <td id="weather-pressure">no data</td>
+        </tr>
+        <tr>
+            <td>Temperature</td>
+            <td id="weather-temp">no data</td>
+        </tr>
+        <tr>
+            <td>Feels like</td>
+            <td id="weather-feels">no data</td>
+        </tr>
+        <tr>
+            <td>Wind speed</td>
+            <td id="weather-wspeed">no data</td>
+        </tr>
+        <tr>
+            <td>Country code</td>
+            <td id="weather-code">no data</td>
+        </tr>
+        <tr>
+            <td>Humidity</td>
+            <td id="weather-humidity">no data</td>
+        </tr>
+    </table>
+    <br>
+    <hr>
+    <h3>Input BTC wallet (Example: bc1qtzrgc6sq5c3hgktlg7dk38ytgdm8fnjhnj9khl)</h3>
+    <input type="text" id="wallet-select">
+    <button onclick="checkBTCWallet()">check it!</button>
+    <br>
+    <br>
+    <table>
+        <tr>
+            <td>Total received(SAT)</td>
+            <td id="wallet-recv">no data</td>
+        </tr>
+        <tr>
+            <td>Total sent(SAT)</td>
+            <td id="wallet-sent">no data</td>
+        </tr>
+        <tr>
+            <td>Balance(SAT)</td>
+            <td id="wallet-bal">no data</td>
+        </tr>
+    </table>
+    <hr>
+    <button onclick="knowBTC()">Know current BTC price in USD</button>
+    <br>
+    <hr>
+    <h3>SAILAUBEK NARIMAN SE-2203</h3>
+<script>
+const map = new ol.Map({
+    target: 'map',
+    layers: [
+        new ol.layer.Tile({
+        source: new ol.source.OSM(),
+        }),
+    ],
+    view: new ol.View({
+        center: [0, 0],
+        zoom: 2,
+    }),
+});
+
+function knowBTC(){
+    fetch('/BTC/price')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            alert(`BTC price in USD at current moment: ${data.USD}`)
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            alert('Failed to fetch BTC price data');
+    });
+}
+
+function checkBTCWallet(){
+    const balanceInput = document.getElementById("wallet-select");
+    if(typeof balanceInput === "undefined" || !balanceInput.value){
+        alert("No address provided");
+        return;
+    }
+
+    const balanceAddress = balanceInput.value;
+    fetch(`/wallet/${balanceAddress}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            document.getElementById("wallet-recv").innerHTML = data.total_received;
+            document.getElementById("wallet-sent").innerHTML = data.total_sent;
+            document.getElementById("wallet-bal").innerHTML = data.balance;
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            alert('Failed to fetch balance data');
+        });
+}
+
+function weatherCity(){
+    const cityInput = document.getElementById("city-select");
+    if(typeof cityInput === "undefined" || !cityInput.value){
+        alert("Invalid city name provided");
+        return;
+    }
+
+    const cityName = cityInput.value;
+    fetch(`/weather/${cityName}`)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            setCenter(data.coord.lat, data.coord.lon);
+            document.getElementById("weather-pressure").innerHTML = data.main.pressure;
+            document.getElementById("weather-temp").innerHTML = data.main.temp + "C";
+            document.getElementById("weather-feels").innerHTML = data.main.feels_like;
+            document.getElementById("weather-humidity").innerHTML = data.main.humidity;
+            document.getElementById("weather-wspeed").innerHTML = data.wind.speed + "m/s";
+            document.getElementById("weather-code").innerHTML = data.sys.country;
+        })
+        .catch(error => {
+            console.error('There has been a problem with your fetch operation:', error);
+            alert('Failed to fetch weather data');
+        });
+
+}
+
+function setCenter(latitude, longitude, zoom = 9) {
+        var view = map.getView();
+        var olCenter = ol.proj.fromLonLat([longitude, latitude]);
+        view.setCenter(olCenter);
+        view.setZoom(zoom);
+    }
+</script>
