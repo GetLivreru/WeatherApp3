@@ -3,7 +3,7 @@ const axios = require("axios");
 const path = require("path");
 
 const PORT = 3000;
-const API_KEY = "74a873d4c2a5d9d01989854d12855759";
+const API_KEY = "94b07001ec1f4be8df8aa962a94b7dad";
 const app = express(); 
 
 app.use(express.static(path.join(__dirname, 'public')));

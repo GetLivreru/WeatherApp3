@@ -1,0 +1,43 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+h3 {
+    margin-top: 20px;
+    text-align: center; /* Center align the heading */
+}
+.input-container, .button-container, .weather-container, .wallet-container {
+    text-align: center; /* Center align the input field, button, and data */
+    margin: 0 auto; /* Center the container horizontally */
+    width: 300px; /* Set a fixed width for the container */
+    border: 1px solid #ddd; /* Add a border */
+    padding: 10px; /* Add padding */
+    border-radius: 5px; /* Add border radius for rounded corners */
+}
+input[type="text"], button {
+    padding: 8px;
+    font-size: 16px;
+}
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+}
+table th, table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+table th {
+    background-color: #f2f2f2;
+}
+#map {
+    height: 300px;
+    margin-top: 20px;
+}
+hr {
+    margin-top: 20px;
+    border: none;
+    border-top: 1px solid #ddd;
+}

@@ -3,85 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MIDKA SAILAUBEK</title>
+    <title>WeatherApp</title>
     <script src="https://cdn.jsdelivr.net/npm/ol@v8.2.0/dist/ol.js"></script>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@v8.2.0/ol.css">
-    <style>
-        table {
-            border-collapse: collapse; 
-        }
-        table tr {
-            border: 1px solid black; 
-        }        
-        table td, table th {
-            border-left: 1px solid black; 
-            padding: 8px; 
-        }
-        table td:first-child, table th:first-child {
-            border-left: none; 
-        }
-    </style>
+    <link rel="stylesheet" href="index.css">
 </head>
 <body>
     <h3>Select city</h3>
-    <input type="text" id="city-select">
-    <button onclick="weatherCity()">know it!</button>
+    <div class="input-container">
+        <input type="text" id="city-select">
+        <button onclick="weatherCity()">know it!</button>
+    </div>
     <br>
     <br>
     <div id="map" style="height: 300px;"></div>
     <br>
-    <table>
-        <tr>
-            <td>Pressure</td>
-            <td id="weather-pressure">no data</td>
-        </tr>
-        <tr>
-            <td>Temperature</td>
-            <td id="weather-temp">no data</td>
-        </tr>
-        <tr>
-            <td>Feels like</td>
-            <td id="weather-feels">no data</td>
-        </tr>
-        <tr>
-            <td>Wind speed</td>
-            <td id="weather-wspeed">no data</td>
-        </tr>
-        <tr>
-            <td>Country code</td>
-            <td id="weather-code">no data</td>
-        </tr>
-        <tr>
-            <td>Humidity</td>
-            <td id="weather-humidity">no data</td>
-        </tr>
-    </table>
+    <div class="weather-container">
+        <table>
+            <tr>
+                <td>Pressure</td>
+                <td id="weather-pressure">no data</td>
+            </tr>
+            <tr>
+                <td>Temperature</td>
+                <td id="weather-temp">no data</td>
+            </tr>
+            <tr>
+                <td>Feels like</td>
+                <td id="weather-feels">no data</td>
+            </tr>
+            <tr>
+                <td>Wind speed</td>
+                <td id="weather-wspeed">no data</td>
+            </tr>
+            <tr>
+                <td>Country code</td>
+                <td id="weather-code">no data</td>
+            </tr>
+            <tr>
+                <td>Humidity</td>
+                <td id="weather-humidity">no data</td>
+            </tr>
+        </table>
+    </div>
     <br>
     <hr>
     <h3>Input BTC wallet (Example: bc1qtzrgc6sq5c3hgktlg7dk38ytgdm8fnjhnj9khl)</h3>
-    <input type="text" id="wallet-select">
-    <button onclick="checkBTCWallet()">check it!</button>
+    <div class="input-container">
+        <input type="text" id="wallet-select">
+        <button onclick="checkBTCWallet()">check it!</button>
+    </div>
     <br>
     <br>
-    <table>
-        <tr>
-            <td>Total received(SAT)</td>
-            <td id="wallet-recv">no data</td>
-        </tr>
-        <tr>
-            <td>Total sent(SAT)</td>
-            <td id="wallet-sent">no data</td>
-        </tr>
-        <tr>
-            <td>Balance(SAT)</td>
-            <td id="wallet-bal">no data</td>
-        </tr>
-    </table>
+    <div class="wallet-container">
+        <table>
+            <tr>
+                <td>Total received(SAT)</td>
+                <td id="wallet-recv">no data</td>
+            </tr>
+            <tr>
+                <td>Total sent(SAT)</td>
+                <td id="wallet-sent">no data</td>
+            </tr>
+            <tr>
+                <td>Balance(SAT)</td>
+                <td id="wallet-bal">no data</td>
+            </tr>
+        </table>
+    </div>
     <hr>
-    <button onclick="knowBTC()">Know current BTC price in USD</button>
+    <div class="button-container">
+        <button onclick="knowBTC()">Know current BTC price in USD</button>
+    </div>
     <br>
     <hr>
-    <h3>SAILAUBEK NARIMAN SE-2203</h3>
+    <h3>Kaiyrbekov Adilet SE-2203</h3>
 <script>
 const map = new ol.Map({
     target: 'map',
@@ -177,3 +173,5 @@ function setCenter(latitude, longitude, zoom = 9) {
         view.setZoom(zoom);
     }
 </script>
+</body>
+</html>
