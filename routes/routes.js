@@ -1,6 +1,6 @@
 const express = require("express");
 const axios = require("axios");
-
+const { client, connectToDatabase } = require('../db/db.js');
 const API_KEY = "94b07001ec1f4be8df8aa962a94b7dad";
 const router = express.Router();
 

@@ -15,6 +15,9 @@ h3 {
     padding: 10px; /* Add padding */
     border-radius: 5px; /* Add border radius for rounded corners */
 }
+.input-container, .wallet-container {
+    margin-bottom: 20px; /* Add bottom margin to create space */
+}
 input[type="text"], button {
     padding: 8px;
     font-size: 16px;
