@@ -95,8 +95,8 @@ router.post("/signup", async (req, res) => {
             password
         });
 
-        // Возвращаем успешный ответ клиенту
-        res.status(200).send({ success: true, message: "User registered successfully" });
+        res.status(200).send({ success: true, redirectUrl: "/" });
+ 
     } catch (error) {
         console.error("Error registering user:", error);
         res.status(500).send({ success: false, message: "Error registering user" });

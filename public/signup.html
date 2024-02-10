@@ -28,13 +28,17 @@
                 password: formData.get('password')
             };
 
-            axios.post('/signup', userData) // Отправить данные на сервер
-                .then(response => {
-                    console.log(response.data);
-                })
-                .catch(error => {
-                    console.error(error);
-                });
+            axios.post('/signup', userData)
+    .then(response => {
+        console.log(response.data);
+        // Перенаправление на указанный URL
+        if (response.data.success && response.data.redirectUrl) {
+            window.location.href = response.data.redirectUrl;
+        }
+    })
+    .catch(error => {
+        console.error(error);
+    });
         });
     </script>
 </body>
