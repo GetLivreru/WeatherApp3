@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
@@ -15,9 +16,9 @@
         }
 
         form {
-            width: 300px;
+            width: 400px;
             padding: 20px;
-            border: 1px solid #ccc;
+            border: 1px solid #9333EA;
             border-radius: 10px; /* Закругленные углы формы */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             text-align: center;
@@ -27,7 +28,12 @@
             text-align: center;
             margin-bottom: 20px; /* добавлено для отступа между заголовком и формой */
         }
-
+        
+        label[for="username"],
+        label[for="email"],
+        label[for="password"] {
+        color: #9333EA;
+        }
         label {
             display: block;
             margin-bottom: 10px;
@@ -40,7 +46,7 @@
             width: calc(100% - 22px); /* Ширина поля ввода с учетом внутренних отступов */
             padding: 10px;
             margin-bottom: 10px;
-            border: 1px solid #ccc;
+            border: 1px solid #a21caf;
             border-radius: 5px; /* Закругленные углы полей ввода */
             box-sizing: border-box;
         }
@@ -55,20 +61,20 @@
             top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
-            color: #777;
+            color: #9333EA;
         }
 
         button[type="submit"] {
-            width: 150px; /* Уменьшение ширины кнопки */
-            max-width: 100%; /* Максимальная ширина кнопки равна ширине формы */
-            background-color: #007bff;
+            width: 150px;  
+            max-width: 100%;  
+            background-color: #9333EA;
             color: #fff;
             cursor: pointer;
-            border-radius: 5px; /* Закругленные углы кнопки */
-            margin-top: 10px; /* Добавлен отступ сверху */
-            display: block; /* Сделать кнопку блочным элементом */
-            margin-left: auto; /* Выравнивание кнопки по центру */
-            margin-right: auto; /* Выравнивание кнопки по центру */
+            border-radius: 5px;  
+            margin-top: 10px;  
+            display: block;  
+            margin-left: auto; 
+            margin-right: auto;  
         }       
 
         button[type="submit"]:hover {
@@ -82,8 +88,8 @@
         }
     </style>
 </head>
-<body>
-    <form id="signup-form" action="/signup" method="POST">
+<body class="bg-purple-600">
+    <form class="bg-gray-200" id="signup-form" action="/signup" method="POST">
         <h1>Sign Up</h1>
         <label for="username">
             <i class="fas fa-user"></i> <!-- Иконка пользователя -->
