@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sign Up</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
         body {
             display: flex;
@@ -13,17 +14,18 @@
             margin: 0;
         }
 
-        .container {
-            width: 300px;
-            text-align: center; /* Центрирование содержимого */
-        }
-
         form {
-            width: 100%;
+            width: 300px;
             padding: 20px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 10px; /* Закругленные углы формы */
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px; /* добавлено для отступа между заголовком и формой */
         }
 
         label {
@@ -39,36 +41,87 @@
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
-            border-radius: 5px;
+            border-radius: 5px; /* Закругленные углы полей ввода */
             box-sizing: border-box;
         }
 
+        input[type="password"] {
+            position: relative;
+        }
+
+        input[type="password"] .toggle-password {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #777;
+        }
+
         button[type="submit"] {
+            width: 150px; /* Уменьшение ширины кнопки */
+            max-width: 100%; /* Максимальная ширина кнопки равна ширине формы */
             background-color: #007bff;
             color: #fff;
             cursor: pointer;
-        }
+            border-radius: 5px; /* Закругленные углы кнопки */
+            margin-top: 10px; /* Добавлен отступ сверху */
+            display: block; /* Сделать кнопку блочным элементом */
+            margin-left: auto; /* Выравнивание кнопки по центру */
+            margin-right: auto; /* Выравнивание кнопки по центру */
+        }       
 
         button[type="submit"]:hover {
             background-color: #0056b3;
         }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <form id="signup-form" action="/signup" method="POST">
         <h1>Sign Up</h1>
-        <form id="signup-form" action="/signup" method="POST">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Submit</button>
-        </form>
-    </div>
+        <label for="username">
+            <i class="fas fa-user"></i> <!-- Иконка пользователя -->
+            Username:
+        </label>
+        <input type="text" id="username" name="username" required>
+        <label for="email">
+            <i class="fas fa-envelope"></i> <!-- Иконка почты -->
+            Email:
+        </label>
+        <input type="email" id="email" name="email" required>
+        <label for="password">
+            <i class="fas fa-lock"></i> <!-- Иконка замка -->
+            Password:
+            <span class="toggle-password" onclick="togglePasswordVisibility('password')">
+                <i class="fas fa-eye"></i> <!-- Иконка отображения пароля -->
+            </span>
+        </label>
+        <input type="password" id="password" name="password" required>
+        <button type="submit">Create Account</button>
+    </form>
+
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script>
+        function togglePasswordVisibility(inputId) {
+            const passwordInput = document.getElementById(inputId);
+            const icon = passwordInput.nextElementSibling.querySelector('i');
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+
         document.getElementById('signup-form').addEventListener('submit', function(event) {
             event.preventDefault(); // Предотвратить отправку формы по умолчанию
 
