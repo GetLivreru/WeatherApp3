@@ -5,9 +5,14 @@ const { client, connectToDatabase } = require('../db/db.js');
 const API_KEY = "94b07001ec1f4be8df8aa962a94b7dad";
 const router = express.Router();
 router.use(express.json());
+const bcrypt = require('bcrypt');
 
 router.get("/signup", function(req, res) {
     res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
+});
+
+router.get("/login", function(req, res) {
+    res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
 });
 
 
@@ -102,4 +107,41 @@ router.post("/signup", async (req, res) => {
         res.status(500).send({ success: false, message: "Error registering user" });
     }
 });
+
+router.post("/login", async (req, res) => {
+    try {
+        const { username, password } = req.body;
+
+        // Проверяем, что все данные присутствуют
+        if (!username || !password) {
+            return res.status(400).send({ success: false, message: "Missing username or password" });
+        }
+
+        // Подключаемся к базе данных
+        await connectToDatabase();
+
+        // Ищем пользователя по имени в базе данных
+        const user = await client.db("users").collection("users").findOne({ username });
+
+        if (!user) {
+            return res.status(401).send({ success: false, message: "Incorrect username or password" });
+        }
+
+        // Сверяем хэшированный пароль из базы данных с введенным паролем
+        const passwordMatch = await bcrypt.compare(password, user.password);
+
+        if (!passwordMatch) {
+            return res.status(401).send({ success: false, message: "Incorrect username or password" });
+        }
+
+        // Если все верно, отправляем успешный ответ
+        res.status(200).send({ success: true, message: "Login successful" });
+
+    } catch (error) {
+        console.error("Error logging in user:", error);
+        res.status(500).send({ success: false, message: "Incorrect username or password" });
+    }
+});
+
+
 module.exports = router;
