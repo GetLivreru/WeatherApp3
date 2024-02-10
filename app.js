@@ -1,7 +1,7 @@
 const express = require("express");
 const path = require("path");
 const routes = require("./routes/routes");
-
+const bodyParser = require("body-parser");
 const PORT = 3000;
 const app = express();
 

@@ -10,11 +10,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body class="bg-teal-300">
-    <h3>Select city</h3>
+    <h3 id="city-label">Select city</h3> <!-- Добавлен идентификатор для обновления -->
     <div class="input-container mb-4">
         <input type="text" id="city-select">
         <button class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-yellow-500 hover:to-blue-500 py-2 px-4 rounded shadow-lg hover:shadow-cyan-800 cursor-pointer text-lg" onclick="weatherCity()">know it!</button>
     </div>
+    <h3 class="city-label">Select city</h3>
     <br>
     <br>
     <div id="map" style="height: 300px;"></div>
@@ -22,11 +23,11 @@
     <div class="weather-container">
         <table>
             <tr>
-                <td>Pressure</td>
+                <td id="weather-pressure-label">Pressure</td> <!-- Добавлен идентификатор для обновления -->
                 <td id="weather-pressure">no data</td>
             </tr>
             <tr>
-                <td>Temperature</td>
+                <td id="weather-temp-label">Temperature</td> <!-- Добавлен идентификатор для обновления -->
                 <td id="weather-temp">no data</td>
             </tr>
             <tr>
@@ -79,6 +80,11 @@
     <br>
     <hr>
     <h3>Kaiyrbekov Adilet SE-2203</h3>
+    <select id="language-select" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+        <option value="kk">Қазақша</option>
+    </select>
 <script>
 const map = new ol.Map({
     target: 'map',
@@ -172,7 +178,63 @@ function setCenter(latitude, longitude, zoom = 9) {
         var olCenter = ol.proj.fromLonLat([longitude, latitude]);
         view.setCenter(olCenter);
         view.setZoom(zoom);
+}
+document.addEventListener('DOMContentLoaded', function() {
+    // Вызов функции updateLanguage после загрузки всего контента страницы
+    updateLanguage();
+});
+
+document.getElementById("weather-pressure-label").innerText = getLocalizedString("Pressure");
+document.getElementById("weather-temp-label").innerText = getLocalizedString("Temperature");
+let currentLanguage = 'en'; // Default language
+
+function changeLanguage() {
+    currentLanguage = document.getElementById("language-select").value;
+    // Update all text on the page
+    updateLanguage();
+}
+
+function updateLanguage() {
+    // Update text based on selected language
+    document.getElementById("city-label").innerText = getLocalizedString("Select city");
+    document.getElementById("weather-pressure-label").innerText = getLocalizedString("Pressure"); // Обновлено
+    document.getElementById("weather-temp-label").innerText = getLocalizedString("Temperature"); // Обновлено
+    // Update other elements similarly
+}
+
+function getLocalizedString(key) {
+    // Add language translations here
+    switch (currentLanguage) {
+        case 'ru':
+            switch (key) {
+                case 'Select city':
+                    return 'Выберите город';
+                case 'Pressure': // Добавлен перевод для "Pressure"
+                    return 'Давление';
+                case 'Temperature': // Добавлен перевод для "Temperature"
+                    return 'Температура';
+                // Add more translations as needed
+            }
+            break;
+        case 'kk':
+            switch (key) {
+                case 'Select city':
+                    return 'Қаланы таңдаңыз';
+                case 'Pressure': // Добавлен перевод для "Pressure"
+                    return 'Атмосфера тынысқы';
+                case 'Temperature': // Добавлен перевод для "Temperature"
+                    return 'Температура';
+                // Add more translations as needed
+            }
+            break;
+        // English will be default
     }
+    return key; // Return default if translation not found
+}
+
+// Call updateLanguage initially to set initial language
+updateLanguage();
+
 </script>
 </body>
 </html>

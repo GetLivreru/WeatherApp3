@@ -1,8 +1,15 @@
 const express = require("express");
 const axios = require("axios");
+const path = require("path");
 const { client, connectToDatabase } = require('../db/db.js');
 const API_KEY = "94b07001ec1f4be8df8aa962a94b7dad";
 const router = express.Router();
+router.use(express.json());
+
+router.get("/signup", function(req, res) {
+    res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
+});
+
 
 router.get("/", function(req, res) {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
@@ -15,7 +22,8 @@ router.get("/ping", function(req, res){
 
 router.get("/weather/:city", function(req, res){
     const city = req.params.city;
-    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&local=ru`;
+    const lang = req.query.lang || 'en'; // Используйте параметр запроса lang
+    const url = `https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=${API_KEY}&units=metric&lang=${lang}`; // Используйте lang в URL
 
     axios.get(url)
         .then(response => {
@@ -68,5 +76,30 @@ router.get("/BTC/price", function(req, res){
             }
     });
 });
+router.post("/signup", async (req, res) => {
+    try {
+        const { username, email, password } = req.body;
 
+        // Проверяем, что все данные присутствуют
+        if (!username || !email || !password) {
+            return res.status(400).send({ success: false, message: "Missing required fields" });
+        }
+
+        // Подключаемся к базе данных
+        await connectToDatabase();
+
+        // Выполняем операцию добавления пользователя в коллекцию users
+        await client.db("users").collection("users").insertOne({
+            username,
+            email,
+            password
+        });
+
+        // Возвращаем успешный ответ клиенту
+        res.status(200).send({ success: true, message: "User registered successfully" });
+    } catch (error) {
+        console.error("Error registering user:", error);
+        res.status(500).send({ success: false, message: "Error registering user" });
+    }
+});
 module.exports = router;
