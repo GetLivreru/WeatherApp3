@@ -1,30 +1,41 @@
 body {
+    font-family: Arial, sans-serif;
     display: flex;
-    justify-content: center;
+    flex-direction: column; /* Установка направления контейнера на столбец */
     align-items: center;
-    height: 100vh;
+    min-height: 100vh; /* Минимальная высота на весь видимый экран */
     margin: 0;
+}
+
+nav {
+    width: 100%;
 }
 
 form {
     width: 400px;
     padding: 20px;
     border: 1px solid #9333EA;
-    border-radius: 10px; /* Закругленные углы формы */
+    border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     text-align: center;
+    margin-top: 150px; /* Увеличен отступ сверху */
+    margin-bottom: 20px; /* Добавлен отступ снизу */
+    display: flex; /* Добавлено */
+    flex-direction: column; /* Добавлено */
+    align-items: center; /* Добавлено */
 }
 
 h1 {
     text-align: center;
-    margin-bottom: 20px; /* добавлено для отступа между заголовком и формой */
+    margin-bottom: 20px;
 }
 
 label[for="username"],
 label[for="email"],
 label[for="password"] {
-color: #9333EA;
+    color: #9333EA;
 }
+
 label {
     display: block;
     margin-bottom: 10px;
@@ -34,11 +45,11 @@ input[type="text"],
 input[type="email"],
 input[type="password"],
 button[type="submit"] {
-    width: calc(100% - 22px); /* Ширина поля ввода с учетом внутренних отступов */
+    width: calc(100% - 22px);
     padding: 10px;
     margin-bottom: 10px;
     border: 1px solid #a21caf;
-    border-radius: 5px; /* Закругленные углы полей ввода */
+    border-radius: 5px;
     box-sizing: border-box;
 }
 
@@ -56,21 +67,22 @@ input[type="password"] .toggle-password {
 }
 
 button[type="submit"] {
-    width: 150px;  
-    max-width: 100%;  
+    width: 150px;
+    max-width: 100%;
     background-color: #9333EA;
     color: #fff;
     cursor: pointer;
-    border-radius: 5px;  
-    margin-top: 10px;  
-    display: block;  
-    margin-left: auto; 
-    margin-right: auto;  
-}       
+    border-radius: 5px;
+    margin-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
 
 button[type="submit"]:hover {
     background-color: #0056b3;
 }
+
 .button-container {
     display: flex;
     justify-content: center;
