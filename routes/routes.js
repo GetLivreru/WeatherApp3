@@ -1,11 +1,71 @@
 const express = require("express");
 const axios = require("axios");
+const jwt = require("jsonwebtoken");
 const path = require("path");
 const { client, connectToDatabase } = require('../db/db.js');
 const API_KEY = "94b07001ec1f4be8df8aa962a94b7dad";
 const router = express.Router();
 router.use(express.json());
 const bcrypt = require('bcrypt');
+const secretKey = "my_super_secret_key_123";
+
+
+router.get("/admin", async (req, res) => {
+    try {
+        await connectToDatabase();
+        const users = await client.db("users").collection("users").find().toArray();
+        res.render(path.join(__dirname, '..', 'public', 'admin.ejs'), { users: users });
+    } catch (error) {
+        console.error("Error fetching users:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post("/admin/create", async (req, res) => {
+    try {
+        await connectToDatabase();
+        const { username, email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await client.db("users").collection("users").insertOne({
+            username,
+            email,
+            password: hashedPassword
+        });
+        res.redirect("/admin");
+    } catch (error) {
+        console.error("Error creating user:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post("/admin/update/:id", async (req, res) => {
+    try {
+        await connectToDatabase();
+        const id = req.params.id;
+        const { username, email, password } = req.body;
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await client.db("users").collection("users").updateOne(
+            { _id: ObjectId(id) },
+            { $set: { username, email, password: hashedPassword } }
+        );
+        res.redirect("/admin");
+    } catch (error) {
+        console.error("Error updating user:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
+router.post("/admin/delete/:id", async (req, res) => {
+    try {
+        await connectToDatabase();
+        const id = req.params.id;
+        await client.db("users").collection("users").deleteOne({ _id: ObjectId(id) });
+        res.redirect("/admin");
+    } catch (error) {
+        console.error("Error deleting user:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 router.get("/signup", function(req, res) {
     res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
@@ -112,34 +172,53 @@ router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
 
-        // Проверяем, что все данные присутствуют
-        if (!username || !password) {
-            return res.status(400).send({ success: false, message: "Missing username or password" });
-        }
-
         // Подключаемся к базе данных
         await connectToDatabase();
 
         // Ищем пользователя по имени в базе данных
-        const user = await client.db("users").collection("users").findOne({ username });
+        const user = await client
+            .db("users")
+            .collection("users")
+            .findOne({ username });
 
         if (!user) {
-            return res.status(401).send({ success: false, message: "Incorrect username or password" });
+            return res.status(401).send({ success: false, message: "User not found" });
         }
 
-        // Сверяем хэшированный пароль из базы данных с введенным паролем
+        // Проверяем совпадение пароля
         const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordMatch) {
-            return res.status(401).send({ success: false, message: "Incorrect username or password" });
+            return res.status(401).send({ success: false, message: "Incorrect password" });
         }
 
-        // Если все верно, отправляем успешный ответ
-        res.status(200).send({ success: true, message: "Login successful" });
+        // Генерируем JWT токен
+        const token = jwt.sign({ id: user._id, username: user.username }, "my_super_secret_key_123");
 
+        // Возвращаем токен в ответе
+        res.status(200).send({ success: true, token });
     } catch (error) {
         console.error("Error logging in user:", error);
-        res.status(500).send({ success: false, message: "Incorrect username or password" });
+        res.status(500).send({ success: false, message: "Internal Server Error" });
+    }
+});
+
+router.get("/verify", async (req, res) => {
+    try {
+        // Получаем токен из запроса
+        const token = req.headers.authorization.split(" ")[1];
+
+        // Проверяем валидность токена
+        jwt.verify(token, "my_super_secret_key_123", (err, decoded) => {
+            if (err) {
+                return res.status(401).send({ success: false, message: "Invalid token" });
+            } else {
+                return res.status(200).send({ success: true, decoded });
+            }
+        });
+    } catch (error) {
+        console.error("Error verifying token:", error);
+        res.status(500).send({ success: false, message: "Internal Server Error" });
     }
 });
 
