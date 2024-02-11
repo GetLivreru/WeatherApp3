@@ -22,20 +22,31 @@
             </div>
             <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto hidden" id="nav-content">
                 <div class="text-sm lg:flex-grow">
-                    <a href="http://localhost:3000/" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
+                    <a href="/" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
                         Home
                     </a>
-                    <a href="http://localhost:3000/signup" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4">
+                    <a href="/signup" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4" <% if (isAuthenticated) { %>style="display: none;"<% } %>>
                         Signup
                     </a>
-                    <a href="http://localhost:3000/Login" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white">
+                    <a href="/login" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white" <% if (isAuthenticated) { %>style="display: none;"<% } %>>
                         Login
+                    </a>
+                    <a href="/logout" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white mr-4" <% if (!isAuthenticated) { %>style="display: none;"<% } %>>
+                        Logout
+                    </a>
+                    <a href="/history" class="block mt-4 lg:inline-block lg:mt-0 text-gray-200 hover:text-white" <% if (!isAuthenticated) { %>style="display: none;"<% } %>>
+                        History
                     </a>
                 </div>
             </div>
         </div>
     </nav>
-    <h3 id="city-label"></h3> <!-- Добавлен идентификатор для обновления -->
+    <select id="language-select" onchange="changeLanguage()">
+        <option value="en">English</option>
+        <option value="ru">Русский</option>
+        <option value="kk">Қазақша</option>
+    </select>
+    <h3 id="city-label"></h3>
     <div class="bg-emerald-500 input-container mb-4">
         <input type="text" id="city-select">
         <button class="bg-gradient-to-r from-green-500 to-blue-500 hover:from-yellow-500 hover:to-blue-500 py-2 px-4 rounded shadow-lg hover:shadow-cyan-800 cursor-pointer text-lg" onclick="weatherCity()">Get Weather!</button>
@@ -47,11 +58,11 @@
     <div class="bg-sky-400 weather-container">
         <table class="bg-yellow-200">
             <tr class="bg-cyan-100">
-                <td id="weather-pressure-label">Pressure</td> <!-- Добавлен идентификатор для обновления -->
+                 <td>Pressure</td>
                 <td id="weather-pressure">no data</td>
             </tr>
             <tr class="bg-cyan-200">
-                <td id="weather-temp-label">Temperature</td> <!-- Добавлен идентификатор для обновления -->
+                <td>Temperature</td>
                 <td id="weather-temp">no data</td>
             </tr>
             <tr class="bg-cyan-300">
@@ -104,12 +115,40 @@
     <br>
     <hr>
     <h3>Kaiyrbekov Adilet SE-2203</h3>
-    <select id="language-select" onchange="changeLanguage()">
-        <option value="en">English</option>
-        <option value="ru">Русский</option>
-        <option value="kk">Қазақша</option>
-    </select>
+</script>
 <script>
+
+let translations = {
+    "Pressure": {
+        en: "Pressure",
+        ru: "Давление",
+        kk: "Қысым"
+    },
+    "Temperature": {
+        en: "Temperature",
+        ru: "Температура",
+        kk: "Температура"
+    },
+    "Humidity": {
+        en: "Humidity",
+        ru: "Влажность",
+        kk: "Ылғалдылық"
+    },
+    "Wind Speed": {
+        en: "Wind Speed",
+        ru: "Скорость ветра",
+        kk: "Жел асы"
+    }
+    // Добавьте другие ключи и переводы здесь
+};
+
+let currentLanguage = 'en'; // Default language
+
+function getLocalizedString(key) {
+    return translations[key][currentLanguage];
+}
+
+
 const map = new ol.Map({
     target: 'map',
     layers: [
@@ -203,14 +242,7 @@ function setCenter(latitude, longitude, zoom = 9) {
         view.setCenter(olCenter);
         view.setZoom(zoom);
 }
-document.addEventListener('DOMContentLoaded', function() {
-    // Вызов функции updateLanguage после загрузки всего контента страницы
-    updateLanguage();
-});
 
-document.getElementById("weather-pressure-label").innerText = getLocalizedString("Pressure");
-document.getElementById("weather-temp-label").innerText = getLocalizedString("Temperature");
-let currentLanguage = 'en'; // Default language
 
 function changeLanguage() {
     currentLanguage = document.getElementById("language-select").value;
@@ -221,44 +253,13 @@ function changeLanguage() {
 function updateLanguage() {
     // Update text based on selected language
     document.getElementById("city-label").innerText = getLocalizedString("Select city");
-    document.getElementById("weather-pressure-label").innerText = getLocalizedString("Pressure"); // Обновлено
-    document.getElementById("weather-temp-label").innerText = getLocalizedString("Temperature"); // Обновлено
+    document.getElementById("weather-pressure-label").innerText = getLocalizedString("Pressure");
+    document.getElementById("weather-temp-label").innerText = getLocalizedString("Temperature");
     // Update other elements similarly
-}
-
-function getLocalizedString(key) {
-    // Add language translations here
-    switch (currentLanguage) {
-        case 'ru':
-            switch (key) {
-                case 'Select city':
-                    return 'Выберите город';
-                case 'Pressure': // Добавлен перевод для "Pressure"
-                    return 'Давление';
-                case 'Temperature': // Добавлен перевод для "Temperature"
-                    return 'Температура';
-                // Add more translations as needed
-            }
-            break;
-        case 'kk':
-            switch (key) {
-                case 'Select city':
-                    return 'Қаланы таңдаңыз';
-                case 'Pressure': // Добавлен перевод для "Pressure"
-                    return 'Атмосфера тынысқы';
-                case 'Temperature': // Добавлен перевод для "Temperature"
-                    return 'Температура';
-                // Add more translations as needed
-            }
-            break;
-        // English will be default
-    }
-    return key; // Return default if translation not found
 }
 
 // Call updateLanguage initially to set initial language
 updateLanguage();
-
 </script>
 </body>
 </html>

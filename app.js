@@ -4,14 +4,15 @@ const routes = require("./routes/routes");
 const bodyParser = require("body-parser");
 const PORT = 3000;
 const app = express();
-app.set('views', 'public');
+ 
+app.set('views', path.join(__dirname, 'public'));
 app.set('view engine', 'ejs');
 
-
+app.use(express.json());
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(bodyParser.json());
 app.use("/", routes);
 
-app.listen(PORT, function(){
+app.listen(PORT,"0.0.0.0", function(){
     console.log("Server running on port: " + PORT);
 });

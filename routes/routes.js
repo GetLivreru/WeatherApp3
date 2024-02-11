@@ -1,14 +1,72 @@
 const express = require("express");
 const axios = require("axios");
-const jwt = require("jsonwebtoken");
 const path = require("path");
 const { client, connectToDatabase } = require('../db/db.js');
 const API_KEY = "94b07001ec1f4be8df8aa962a94b7dad";
 const router = express.Router();
 router.use(express.json());
 const bcrypt = require('bcrypt');
-const secretKey = "my_super_secret_key_123";
+const { ObjectId } = require('mongodb');
+const session = require("express-session");
 
+let history = [];
+router.use(session({
+    secret: 'your secret key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Note: use `secure: true` for https connections
+  }));
+
+
+router.get("/history", function(req, res) {
+    const isAuthenticated = !!req.session.user;
+    if (isAuthenticated) {
+        res.render('history', { history: history });
+    } else {
+        res.redirect("/login");
+    }
+});
+
+const translations = {
+    // ваш перевод
+    "Select city": {
+        en: "Select city",
+        ru: "Выберите город",
+        kk: "Қала таңдаңыз"
+    },
+    "Pressure": {
+        en: "Pressure",
+        ru: "Давление",
+        kk: "Қысым"
+    },
+    "Temperature": {
+        en: "Temperature",
+        ru: "Температура",
+        kk: "Температура"
+    },
+    "Humidity": {
+        en: "Humidity",
+        ru: "Влажность",
+        kk: "Ылғалдылық"
+    },
+    "Wind Speed": {
+        en: "Wind Speed",
+        ru: "Скорость ветра",
+        kk: "Жел асы"
+    }
+};
+
+
+router.use(session({
+    secret: 'my_secret_key', // Секретный ключ для подписи сессионных куки
+    resave: true,
+    saveUninitialized: true,
+    cookie: {
+        secure: false, // Временно установите в false для отладки на локальном сервере
+    }
+}));
+
+ 
 
 router.get("/admin", async (req, res) => {
     try {
@@ -25,11 +83,18 @@ router.post("/admin/create", async (req, res) => {
     try {
         await connectToDatabase();
         const { username, email, password } = req.body;
+        
+        // Check if password is provided
+        if (!password) {
+            return res.status(400).send("Password is required");
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
+
         await client.db("users").collection("users").insertOne({
             username,
             email,
-            password: hashedPassword
+            password: hashedPassword,
+            isAdmin: req.body.isAdmin === 'true'  // Assuming isAdmin is sent from frontend
         });
         res.redirect("/admin");
     } catch (error) {
@@ -37,16 +102,41 @@ router.post("/admin/create", async (req, res) => {
         res.status(500).send("Internal Server Error");
     }
 });
+router.post("/admin/makeAdmin/:userId", async (req, res) => {
+    try {
+        await connectToDatabase();
+        const { userId } = req.params;
+        await client.db("users").collection("users").updateOne(
+            { _id: new ObjectId(userId) },
+            { $set: { isAdmin: true } }
+        );
+        res.redirect("/admin");
+    } catch (error) {
+        console.error("Error making user admin:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
 
 router.post("/admin/update/:id", async (req, res) => {
     try {
         await connectToDatabase();
-        const id = req.params.id;
+        const { id } = req.params;
         const { username, email, password } = req.body;
-        const hashedPassword = await bcrypt.hash(password, 10);
+        
+        // Check if password is provided
+        let hashedPassword;
+        if (password) {
+            hashedPassword = await bcrypt.hash(password, 10);
+        }
+
+        const updateFields = { username, email };
+        if (hashedPassword) {
+            updateFields.password = hashedPassword;
+        }
+
         await client.db("users").collection("users").updateOne(
-            { _id: ObjectId(id) },
-            { $set: { username, email, password: hashedPassword } }
+            { _id: new ObjectId(id) },
+            { $set: updateFields }
         );
         res.redirect("/admin");
     } catch (error) {
@@ -58,8 +148,8 @@ router.post("/admin/update/:id", async (req, res) => {
 router.post("/admin/delete/:id", async (req, res) => {
     try {
         await connectToDatabase();
-        const id = req.params.id;
-        await client.db("users").collection("users").deleteOne({ _id: ObjectId(id) });
+        const { id } = req.params;
+        await client.db("users").collection("users").deleteOne({ _id: new ObjectId(id) });
         res.redirect("/admin");
     } catch (error) {
         console.error("Error deleting user:", error);
@@ -68,16 +158,16 @@ router.post("/admin/delete/:id", async (req, res) => {
 });
 
 router.get("/signup", function(req, res) {
-    res.sendFile(path.join(__dirname, '..', 'public', 'signup.html'));
+    res.render(path.join(__dirname, '..', 'public', 'signup.ejs'));
 });
 
 router.get("/login", function(req, res) {
-    res.sendFile(path.join(__dirname, '..', 'public', 'login.html'));
+    res.render(path.join(__dirname, '..', 'public', 'login')); // Используйте res.render вместо res.sendFile
 });
 
-
 router.get("/", function(req, res) {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    const isAuthenticated = !!req.session.user;
+    res.render('index', { translations: JSON.stringify(translations), isAuthenticated: isAuthenticated, history: history });
 });
 
 router.get("/ping", function(req, res){
@@ -153,11 +243,14 @@ router.post("/signup", async (req, res) => {
         // Подключаемся к базе данных
         await connectToDatabase();
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         // Выполняем операцию добавления пользователя в коллекцию users
         await client.db("users").collection("users").insertOne({
             username,
             email,
-            password
+            password: hashedPassword,
+            isAdmin: false
         });
 
         res.status(200).send({ success: true, redirectUrl: "/" });
@@ -168,59 +261,57 @@ router.post("/signup", async (req, res) => {
     }
 });
 
+
+router.get("/logout", function(req, res) {
+    delete req.session.user;
+    req.session.destroy(function(err) {
+        if (err) {
+            console.error("Error logging out:", err);
+            res.status(500).send("Internal Server Error");
+        } else {
+            res.redirect("/login");
+        }
+    });
+});
+
 router.post("/login", async (req, res) => {
     try {
         const { username, password } = req.body;
-
-        // Подключаемся к базе данных
         await connectToDatabase();
-
-        // Ищем пользователя по имени в базе данных
-        const user = await client
-            .db("users")
-            .collection("users")
-            .findOne({ username });
+        const user = await client.db("users").collection("users").findOne({ username });
 
         if (!user) {
             return res.status(401).send({ success: false, message: "User not found" });
         }
 
-        // Проверяем совпадение пароля
         const passwordMatch = await bcrypt.compare(password, user.password);
 
-        if (!passwordMatch) {
+        if (passwordMatch) {
+            req.session.user = user;
+            return res.status(200).send({ success: true, redirectUrl: user.isAdmin ? "/admin" : "/" });
+        } else {
             return res.status(401).send({ success: false, message: "Incorrect password" });
         }
-
-        // Генерируем JWT токен
-        const token = jwt.sign({ id: user._id, username: user.username }, "my_super_secret_key_123");
-
-        // Возвращаем токен в ответе
-        res.status(200).send({ success: true, token });
     } catch (error) {
         console.error("Error logging in user:", error);
-        res.status(500).send({ success: false, message: "Internal Server Error" });
+        return res.status(500).send({ success: false, message: "Internal Server Error" });
     }
 });
 
-router.get("/verify", async (req, res) => {
+
+router.get("/auth/status", async (req, res) => {
     try {
-        // Получаем токен из запроса
-        const token = req.headers.authorization.split(" ")[1];
-
-        // Проверяем валидность токена
-        jwt.verify(token, "my_super_secret_key_123", (err, decoded) => {
-            if (err) {
-                return res.status(401).send({ success: false, message: "Invalid token" });
-            } else {
-                return res.status(200).send({ success: true, decoded });
-            }
-        });
+        await connectToDatabase();
+        const user = await client.db("users").collection("users").findOne({ ip: req.ip });
+        if (user) {
+            res.send({ isAuthenticated: true, username: user.username });
+        } else {
+            res.send({ isAuthenticated: false });
+        }
     } catch (error) {
-        console.error("Error verifying token:", error);
-        res.status(500).send({ success: false, message: "Internal Server Error" });
+        console.error("Error checking authentication status:", error);
+        res.status(500).send({ isAuthenticated: false });
     }
 });
-
-
+ 
 module.exports = router;
